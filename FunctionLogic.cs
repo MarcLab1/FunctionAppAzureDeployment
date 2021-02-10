@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using FunctionAppAzureDeployment;
 
 namespace FunctionAppLogic
 {
@@ -20,20 +21,26 @@ namespace FunctionAppLogic
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            Website obj;
+            Student student;
 
-            obj = JsonConvert.DeserializeObject<Website>(requestBody);
-            log.LogInformation((obj.id).ToString());
-            log.LogInformation(obj.name);
-            log.LogInformation((obj.url).ToString());
+            student = JsonConvert.DeserializeObject<Student>(requestBody);
 
-            return (ActionResult)new OkObjectResult(obj);
-        }
-        public class Website
-        {
-            public int id { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
+            student.number += 10;
+            student.name += " the smelly dude";
+            student.group = "frog";
+
+            return (ActionResult)new OkObjectResult(student);
         }
     }
 }
+
+    /*
+     * {
+    {
+"name":"Marc",
+"number": 10,
+"group":"person"
+}
+}
+    */
+
