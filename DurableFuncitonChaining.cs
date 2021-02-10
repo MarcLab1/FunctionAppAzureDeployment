@@ -10,7 +10,7 @@ namespace FunctionAppAzureDeployment
 {
     public static class DurableFuncitonChaining
     {
-        [FunctionName("Orchestration")]
+        [FunctionName("DurableFuncitonChaining_Orchestration")]
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context,
              ILogger log
@@ -22,9 +22,9 @@ namespace FunctionAppAzureDeployment
             //Fan out
             foreach (var item in data.Items)
             {
-                outputs.Add(await context.CallActivityAsync<string>("Activity", item.name));
-                outputs.Add(await context.CallActivityAsync<string>("Activity_DirectInput", item.name));
-                outputs.Add(await context.CallActivityAsync<string>("Activity_Object_Pass", item));
+                outputs.Add(await context.CallActivityAsync<string>("DurableFuncitonChaining_Activity", item.name));
+                outputs.Add(await context.CallActivityAsync<string>("DurableFuncitonChaining_Activity_DirectInput", item.name));
+                outputs.Add(await context.CallActivityAsync<string>("DurableFuncitonChaining_Activity_Object_Pass", item));
             }
 
             log.LogInformation("Context name = " + context.ToString());
@@ -32,30 +32,30 @@ namespace FunctionAppAzureDeployment
             return outputs;
         }
 
-        [FunctionName("Activity")]
+        [FunctionName("DurableFuncitonChaining_Activity")]
         public static string SayHello([ActivityTrigger] string name, ILogger log)
         {
             log.LogInformation($">> ACTIVITY: Saying hello to {name}.");
-            return $"Hello {name} from Function Activity";
+            return $"Hello {name} from Function DurableFuncitonChaining_Activity";
         }
 
-        [FunctionName("Activity_DirectInput")]
+        [FunctionName("DurableFuncitonChaining_Activity_DirectInput")]
         public static string SayHelloDirectInput([ActivityTrigger] string name, ILogger log)
         {
             log.LogInformation($">> DIRECT_INPUT: Saying hello to {name}.");
-            return $"Hello {name} from Function Activity_DirectInput";
+            return $"Hello {name} from Function DurableFuncitonChaining_Activity_DirectInput";
         }
 
-        [FunctionName("Activity_Object_Pass")]
+        [FunctionName("DurableFuncitonChaining_Activity_Object_Pass")]
         public static string SayHelloObjectPass([ActivityTrigger] Item item, ILogger log)
         {
             log.LogInformation($">> OBJECT_PASS: Saying hello to {item.name}.");
-            return $"Hello {item.name} from Function Activity_Object_Pass";
+            return $"Hello {item.name} from Function DurableFuncitonChaining_Activity_Object_Pass";
         }
 
         //This is the entry point
         //Client/External Function
-        [FunctionName("FunctionDurableChaining")]
+        [FunctionName("DurableFuncitonChaining_HttpStart")]
         public static async Task<HttpResponseMessage> HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestMessage req,
             [DurableClient] IDurableOrchestrationClient starter,
@@ -65,7 +65,7 @@ namespace FunctionAppAzureDeployment
             var data = await req.Content.ReadAsAsync<ItemList>();
 
             // Function input comes from the request content.
-            string instanceId = await starter.StartNewAsync("Orchestration", data);
+            string instanceId = await starter.StartNewAsync("DurableFuncitonChaining_Orchestration", data);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 

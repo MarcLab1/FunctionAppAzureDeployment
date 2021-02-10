@@ -14,7 +14,7 @@ namespace FunctionAppAzureDeployment
 
         private static readonly int MAX_VALUE = 5;
 
-        [FunctionName("OrchestratorEntity")]
+        [FunctionName("DurableFunctionEntity_Orchestrator")]
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
@@ -23,7 +23,7 @@ namespace FunctionAppAzureDeployment
 
             for (int i = 1; i <= 3; i++)
             {
-                outputs.Add(await context.CallActivityAsync<string>("ActivityEntity", i));    
+                outputs.Add(await context.CallActivityAsync<string>("DurableFunctionEntity_Activity", i));    
             }
             context.SignalEntity(entityId, "Add", 1);
             var finalValue = await context.CallEntityAsync<int>(entityId, "Get");
@@ -37,20 +37,20 @@ namespace FunctionAppAzureDeployment
             return outputs;
         }
 
-        [FunctionName("ActivityEntity")]
-        public static string SayHello([ActivityTrigger] int number, ILogger log)
+        [FunctionName("DurableFunctionEntity_Activity")]
+        public static string PrintCounter([ActivityTrigger] int number, ILogger log)
         {
             return $"Counter = {number}";
         }
         
         //Client
-        [FunctionName("DurableFunctionEntity")]
+        [FunctionName("DurableFunctionEntity_HttpStart")]
         public static async Task<HttpResponseMessage> HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestMessage req,
             [DurableClient] IDurableOrchestrationClient starter,
             ILogger log)
         {   
-            string instanceId = await starter.StartNewAsync("OrchestratorEntity", null);
+            string instanceId = await starter.StartNewAsync("DurableFunctionEntity_Orchestrator", null);
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
             return starter.CreateCheckStatusResponse(req, instanceId);
         }

@@ -10,7 +10,7 @@ namespace FunctionAppAzureDeployment
 {
     public static class DurableFuncitonCosmosLog
     {
-        [FunctionName("DurableFuncitonCosmosLog_Orch")]
+        [FunctionName("DurableFuncitonCosmosLog_Orchestrator")]
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)      
         {
@@ -19,12 +19,12 @@ namespace FunctionAppAzureDeployment
             
             for (int i = 0; i < list.students.Count; i++)
             {
-                outputs.Add(await context.CallActivityAsync<string>("DurableFuncitonCosmosLog_Output", list.students[i]));
+                outputs.Add(await context.CallActivityAsync<string>("DurableFuncitonCosmosLog_Activity", list.students[i]));
             }
             return outputs;
         }
 
-        [FunctionName("DurableFuncitonCosmosLog_Output")]
+        [FunctionName("DurableFuncitonCosmosLog_Activity")]
         public static string printSomeStuff([ActivityTrigger] Student sp, ILogger log) 
         {
             //log.LogInformation($">>>>>>Student Name = {sp.name}");
@@ -56,7 +56,7 @@ namespace FunctionAppAzureDeployment
                 await students.AddAsync(student); //add to the cosmos db
             }
            
-            string instanceId = await starter.StartNewAsync("DurableFuncitonCosmosLog_Orch", list);
+            string instanceId = await starter.StartNewAsync("DurableFuncitonCosmosLog_Orchestrator", list);
             return starter.CreateCheckStatusResponse(req, instanceId);
         }
 
