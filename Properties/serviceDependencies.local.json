@@ -3,6 +3,15 @@
     "storage1": {
       "type": "storage.emulator",
       "connectionId": "AzureWebJobsStorage"
+    },
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "cosmosdb1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.DocumentDB/databaseAccounts/cosmosdb905",
+      "type": "cosmosdb.azure",
+      "connectionId": "DBConnection",
+      "secretStore": "LocalSecretsFile"
     }
   }
 }
