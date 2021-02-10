@@ -32,18 +32,15 @@ namespace FunctionAppAzureDeployment
             CloudBlockBlob blob = blobcontainer.GetBlockBlobReference($"{blobName}");
             blob.UploadText(content);
 
-            outQueue.Add(name);
+            string content2 = name + " was here with ip address " + ipaddress + " on " + date;
+            outQueue.Add(content2);
 
-            return name;
+            return content2;
         }
 
         private static string GetIpFromRequestHeaders(HttpRequest request)
         {
             return (request.Headers["X-Forwarded-For"].FirstOrDefault() ?? "").Split(new char[] { ':' }).FirstOrDefault();
         }
-
-      
-
     }
-
 }
