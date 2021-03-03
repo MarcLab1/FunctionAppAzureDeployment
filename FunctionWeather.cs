@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -22,7 +21,10 @@ namespace FunctionAppAzureDeployment
             if (city == null || city.Length == 0)
                 city = "Toronto";
 
-            string apiCall = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=30ddef5dcb159001e4fce863e56e763f";
+            
+            string apiKey =  Environment.GetEnvironmentVariable("weatherapi"); 
+            string apiCall = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey;
+           
 
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, apiCall);
