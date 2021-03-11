@@ -1,25 +1,33 @@
-using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace FunctionAppAzureDeployment
 {
-    public static class FunctionTwitter
+    public static class FunctionHttpInputBlobOutput
     {
-        [FunctionName("FunctionTwitter")]
+        [FunctionName("FunctionHttpInputBlobOutput")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [Blob("container001/log.TXT", FileAccess.Write, Connection = "AzureWebJobsStorageCloud")] Stream outBlob,
+            [Blob("container001/log.TXT", FileAccess.Read, Connection = "AzureWebJobsStorageCloud")] Stream inBlob,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string name = req.Query["name"];
+
+            StreamReader reader = new StreamReader(inBlob);
+            string oldContent = reader.ReadToEnd();
+
+            byte[] newBuffer = Encoding.UTF8.GetBytes(oldContent + name + "\n");
+            outBlob.Write(newBuffer, 0, newBuffer.Length);
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -33,3 +41,4 @@ namespace FunctionAppAzureDeployment
         }
     }
 }
+
