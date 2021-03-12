@@ -12,13 +12,13 @@ namespace FunctionAppAzureDeployment
     public static class FunctionHttpTriggerBlobQueueOutput
     {
         [FunctionName("FunctionHttpTriggerBlobQueueOutput")]
-        [return: Queue("queue006", Connection = "AzureWebJobsStorageCloud")]
+        [return: Queue("queue2", Connection = "AzureWebJobsStorageCloud")] //this also creates the queue container if it does not exist
 
         public static string QueueOutput(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log,
              [Blob("container001", FileAccess.Write, Connection = "AzureWebJobsStorageCloud")] CloudBlobContainer blobcontainer,
-              [Queue("queue007", Connection = "AzureWebJobsStorageCloud")] ICollector<string> outQueue
+              [Queue("queue1", Connection = "AzureWebJobsStorageCloud")] ICollector<string> outQueue
             )
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
