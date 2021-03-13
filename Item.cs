@@ -9,6 +9,11 @@ namespace FunctionAppAzureDeployment
 
         public string email { get; set; }
 
+        public Item()
+        {
+          
+        }
+
         public Item(string id, string name, string email)
         {
             this.id = id;
