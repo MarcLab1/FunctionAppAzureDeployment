@@ -26,7 +26,7 @@ namespace FunctionAppAzureDeployment
             Item item = JsonConvert.DeserializeObject<Item>(content);
             await items.AddAsync(item);
 
-            return new OkObjectResult(content);
+            //return new OkObjectResult(content);
         }
     }
 }
