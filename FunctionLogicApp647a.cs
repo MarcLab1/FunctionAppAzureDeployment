@@ -12,7 +12,7 @@ namespace FunctionAppAzureDeployment
     public static class FunctionLogicApp647a
     {
         [FunctionName("FunctionLogicApp647a")]
-        public static async void Run(
+        public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             [CosmosDB(databaseName: "database647",
                 collectionName: "container647a",
@@ -26,8 +26,7 @@ namespace FunctionAppAzureDeployment
             Item item = JsonConvert.DeserializeObject<Item>(content);
             await items.AddAsync(item);
 
-            //return new OkObjectResult(content);
-
+            return new OkObjectResult(content);
         }
     }
 }
